@@ -20,8 +20,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from langchain_openai import ChatOpenAI
-from langchain_classic.agents import AgentExecutor, create_openai_functions_agent
-from langchain_classic.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import SystemMessage
 from langchain_core.runnables import RunnableLambda, RunnableSequence
 
@@ -63,12 +63,12 @@ def _build_langchain_agent() -> AgentExecutor:
     tools = [UniversityInfoTool(), DoclingDocumentTool()]
 
     prompt = ChatPromptTemplate.from_messages([
-        SystemMessage(content=SYSTEM_PROMPT),
+        ("system", SYSTEM_PROMPT),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
 
-    agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt)
+    agent = create_tool_calling_agent(llm=llm, tools=tools, prompt=prompt)
 
     return AgentExecutor(
         agent=agent,
